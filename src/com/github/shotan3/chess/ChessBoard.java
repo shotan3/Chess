@@ -32,11 +32,12 @@ public class ChessBoard implements Board {
         if (isInBounds(from) && isInBounds(to)) {
             if (isNonEmptySquare(from)) {
                 String chessPiece = getChessPiece(from);
-                if (getChessPieceColor(chessPiece).equals(nowMakesMove)) {
-                    if (isMoveDefined(from, to, chessPiece)) {
+                String chessPieceColor = getChessPieceColor(chessPiece);
+                if (chessPieceColor.equals(nowMakesMove)) {
+                    if (isMoveDefined(from, to, chessPiece, getChessPiece(to))) {
                         return true;
                     } else {
-                        System.err.println(chessPiece + " doesn't have that kind of move defined according to chess rules!");
+                        System.err.println(getChessPieceVerbose(from) + " doesn't have that kind of move defined according to chess rules!");
                         return false;
                     }
                 } else {
@@ -52,16 +53,21 @@ public class ChessBoard implements Board {
     }
 
     public static boolean isInBounds(String square) {
-        if (square.length() == 2) {
-            if (square.charAt(0) >= 'a' && square.charAt(0) <= 'h'
-                    && square.charAt(1) >= '1' && square.charAt(1) <= '8') {
-                return true;
+        if(square != null){
+            if (square.length() == 2) {
+                if (square.charAt(0) >= 'a' && square.charAt(0) <= 'h'
+                        && square.charAt(1) >= '1' && square.charAt(1) <= '8') {
+                    return true;
+                } else {
+                    System.err.println("Illegal format. Must start with characters from a to h and end with digits from 1 to 8. Example: a8");
+                    return false;
+                }
             } else {
-                System.err.println("Illegal format. Must start with characters from a to h and end with digits from 1 to 8. Example: a8");
+                System.err.println("Illegal format. Must include only 2 characters!");
                 return false;
             }
-        } else {
-            System.err.println("Illegal format. Must include only 2 characters!");
+        }else{
+            System.err.println("Illegal input. Null pointer exception!");
             return false;
         }
     }
@@ -80,13 +86,19 @@ public class ChessBoard implements Board {
     private String getChessPiece(String from) {
         int[] entry = entry(from);
         String chessPiece = board[entry[0]][entry[1]];
+        return chessPiece;
+    }
+
+    private String getChessPieceVerbose(String from) {
+        int[] entry = entry(from);
+        String chessPiece = board[entry[0]][entry[1]];
         switch (chessPiece.charAt(0)) {
             case 'R':
                 return "Rook";
             case 'K':
-                if(from.charAt(1) == 'n'){
+                if (from.charAt(1) == 'n') {
                     return "Knight";
-                }else{
+                } else {
                     return "King";
                 }
             case 'B':
@@ -107,8 +119,8 @@ public class ChessBoard implements Board {
     }
 
     //TODO: Needs implementation!
-    private boolean isMoveDefined(String from, String to, String pieceName) {
-        return ChessMoveValidator.isValidChessMove(from,to,pieceName, isNonEmptySquare(to));
+    private boolean isMoveDefined(String from, String to, String pieceName, String secondChessPiece) {
+        return ChessMoveValidator.isValidChessMove(from, to, pieceName, secondChessPiece);
     }
 
     private void moveChessPiece(String from, String to) {
