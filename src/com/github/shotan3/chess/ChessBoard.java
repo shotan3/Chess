@@ -1,5 +1,7 @@
 package com.github.shotan3.chess;
 
+import com.github.shotan3.chess.utils.ChessMoveValidator;
+
 import java.util.Arrays;
 
 public class ChessBoard implements Board {
@@ -12,25 +14,104 @@ public class ChessBoard implements Board {
     }
 
 
-    public boolean makeMove(String from, String to){
-        if(isValidMove(from, to)){
+    public boolean makeMove(String from, String to) {
+        if (isValidMove(from, to)) {
             moveChessPiece(from, to);
-            if(nowMakesMove.equals("black")){
+            if (nowMakesMove.equals("black")) {
                 nowMakesMove = "white";
-            }else{
+            } else {
                 nowMakesMove = "black";
             }
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
-    private boolean isValidMove(String from, String to){
-        return true;
+    private boolean isValidMove(String from, String to) {
+        if (isInBounds(from) && isInBounds(to)) {
+            if (isNonEmptySquare(from)) {
+                String chessPiece = getChessPiece(from);
+                if (getChessPieceColor(chessPiece).equals(nowMakesMove)) {
+                    if (isMoveDefined(from, to, chessPiece)) {
+                        return true;
+                    } else {
+                        System.err.println(chessPiece + " doesn't have that kind of move defined according to chess rules!");
+                        return false;
+                    }
+                } else {
+                    System.err.println("Not " + nowMakesMove + "'s move!");
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
-    private void moveChessPiece(String from, String to){
+    public static boolean isInBounds(String square) {
+        if (square.length() == 2) {
+            if (square.charAt(0) >= 'a' && square.charAt(0) <= 'h'
+                    && square.charAt(1) >= '1' && square.charAt(1) <= '8') {
+                return true;
+            } else {
+                System.err.println("Illegal format. Must start with characters from a to h and end with digits from 1 to 8. Example: a8");
+                return false;
+            }
+        } else {
+            System.err.println("Illegal format. Must include only 2 characters!");
+            return false;
+        }
+    }
+
+    private boolean isNonEmptySquare(String square) {
+        int[] entry = entry(square);
+        String chessPiece = board[entry[0]][entry[1]];
+        if (chessPiece.equals("X")) {
+            System.err.println(square + " is empty square!");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private String getChessPiece(String from) {
+        int[] entry = entry(from);
+        String chessPiece = board[entry[0]][entry[1]];
+        switch (chessPiece.charAt(0)) {
+            case 'R':
+                return "Rook";
+            case 'K':
+                if(from.charAt(1) == 'n'){
+                    return "Knight";
+                }else{
+                    return "King";
+                }
+            case 'B':
+                return "Bishop";
+            case 'Q':
+                return "Queen";
+            default:
+                return "Pawn";
+        }
+    }
+
+    private String getChessPieceColor(String chessPiece) {
+        if (chessPiece.charAt(chessPiece.length() - 1) == 'w') {
+            return "white";
+        } else {
+            return "black";
+        }
+    }
+
+    //TODO: Needs implementation!
+    private boolean isMoveDefined(String from, String to, String pieceName) {
+        return ChessMoveValidator.isValidChessMove(from,to,pieceName, isNonEmptySquare(to));
+    }
+
+    private void moveChessPiece(String from, String to) {
         int[] start = entry(from);
         int[] end = entry(to);
         board[end[0]][end[1]] = board[start[0]][start[1]];
@@ -38,9 +119,9 @@ public class ChessBoard implements Board {
     }
 
     /*
-    * Converts chess notation to matrix entries
-    */
-    public int[] entry(String input){
+     * Converts chess notation to matrix entries
+     */
+    private int[] entry(String input) {
         int[] result = new int[2];
         result[0] = '8' - input.charAt(1);
         result[1] = input.charAt(0) - 'a';
