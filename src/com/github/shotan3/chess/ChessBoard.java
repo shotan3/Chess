@@ -5,9 +5,46 @@ import java.util.Arrays;
 public class ChessBoard implements Board {
     private String[][] board = new String[8][8];
     private boolean flipped = false;
+    private String nowMakesMove = "white";
 
     public ChessBoard() {
         setUpBoard();
+    }
+
+
+    public boolean makeMove(String from, String to){
+        if(isValidMove(from, to)){
+            moveChessPiece(from, to);
+            if(nowMakesMove.equals("black")){
+                nowMakesMove = "white";
+            }else{
+                nowMakesMove = "black";
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private boolean isValidMove(String from, String to){
+        return true;
+    }
+
+    private void moveChessPiece(String from, String to){
+        int[] start = entry(from);
+        int[] end = entry(to);
+        board[end[0]][end[1]] = board[start[0]][start[1]];
+        board[start[0]][start[1]] = "X";
+    }
+
+    /*
+    * Converts chess notation to matrix entries
+    */
+    public int[] entry(String input){
+        int[] result = new int[2];
+        result[0] = '8' - input.charAt(1);
+        result[1] = input.charAt(0) - 'a';
+        return result;
     }
 
 
