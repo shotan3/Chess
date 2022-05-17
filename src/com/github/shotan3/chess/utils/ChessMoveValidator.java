@@ -41,14 +41,22 @@ public class ChessMoveValidator {
     }
 
     private static boolean pawnCheck(String from, String to, String pawn , String chessPieceOnSecondSquare) {
-        return false;
+        return true;
     }
 
     private static boolean isWhiteSquare(String square) {
         return ((square.charAt(0) - 'a') + ('8' - square.charAt(1))) % 2 == 0;
     }
 
-    public static boolean pawnCanPromote(String from, boolean pawnIsEmpty, boolean secondSquareIsEmpty){
-        return false;
+    public static boolean pawnCanPromote(String from, String to, String pawn, String chessPieceOnSecondSquare){
+        if(pawnCheck(from,to,pawn,chessPieceOnSecondSquare)){
+            if(pawn.charAt(pawn.length()-1) == 'w'){
+                return to.charAt(1) == '8';
+            }else{
+                return to.charAt(1) == '1';
+            }
+        }else{
+            return false;
+        }
     }
 }
