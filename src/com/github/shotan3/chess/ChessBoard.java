@@ -41,7 +41,7 @@ public class ChessBoard implements Board {
                         return false;
                     }
                 } else {
-                    System.err.println("Not " + nowMakesMove + "'s move!");
+                    System.err.println(nowMakesMove + "'s move not yours!");
                     return false;
                 }
             } else {
@@ -63,7 +63,7 @@ public class ChessBoard implements Board {
                     return false;
                 }
             } else {
-                System.err.println("Illegal format. Must include only 2 characters!");
+                System.err.println("Illegal format. Must include exactly 2 characters!");
                 return false;
             }
         }else{
